@@ -17,24 +17,6 @@ if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
 
 const db = require('./lib/db');
 
-// ================================================================
-// AUTO-SEED (free tier workaround - no Shell access on Render free)
-// Runs only when the DB is empty. Safe on every restart.
-// ================================================================
-try {
-  const _noteCount = db.prepare('SELECT COUNT(*) as c FROM notes').get().c;
-  if (_noteCount === 0) {
-    console.log('[BOOT] Empty DB detected - seeding notes...');
-    require('./seed-notes.js');
-    console.log('[BOOT] Seeding quizzes...');
-    require('./seed-quizzes.js');
-    console.log('[BOOT] Seed complete');
-  } else {
-    console.log('[BOOT] DB already has ' + _noteCount + ' notes - skipping seed');
-  }
-} catch (e) {
-  console.error('[BOOT] Seed check failed:', e.message);
-}
 
 // ================================================================
 // SCHEMA — created once, safe to re-run
@@ -200,6 +182,25 @@ CREATE INDEX IF NOT EXISTS idx_activity_student ON activity(student_id);
 CREATE INDEX IF NOT EXISTS idx_recent_student ON recent_views(student_id);
 CREATE INDEX IF NOT EXISTS idx_questions_quiz ON quiz_questions(quiz_id);
 `);
+
+// ================================================================
+// AUTO-SEED (Render free tier - no Shell access)
+// Runs AFTER schema. Safe on every restart.
+// ================================================================
+try {
+  const _noteCount = db.prepare('SELECT COUNT(*) as c FROM notes').get().c;
+  if (_noteCount === 0) {
+    console.log('[BOOT] Empty DB - seeding notes...');
+    require('./seed-notes.js');
+    console.log('[BOOT] Seeding quizzes...');
+    require('./seed-quizzes.js');
+    console.log('[BOOT] Seed complete');
+  } else {
+    console.log('[BOOT] DB has ' + _noteCount + ' notes - skipping seed');
+  }
+} catch (e) {
+  console.error('[BOOT] Seed failed:', e.message);
+}
 
 // ================================================================
 // SEED ADMIN (idempotent — only runs once)
