@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const helmet = require('helmet');
@@ -16,6 +16,25 @@ const dbDir = path.join(__dirname, 'db');
 if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
 
 const db = require('./lib/db');
+
+// ================================================================
+// AUTO-SEED (free tier workaround - no Shell access on Render free)
+// Runs only when the DB is empty. Safe on every restart.
+// ================================================================
+try {
+  const _noteCount = db.prepare('SELECT COUNT(*) as c FROM notes').get().c;
+  if (_noteCount === 0) {
+    console.log('[BOOT] Empty DB detected - seeding notes...');
+    require('./seed-notes.js');
+    console.log('[BOOT] Seeding quizzes...');
+    require('./seed-quizzes.js');
+    console.log('[BOOT] Seed complete');
+  } else {
+    console.log('[BOOT] DB already has ' + _noteCount + ' notes - skipping seed');
+  }
+} catch (e) {
+  console.error('[BOOT] Seed check failed:', e.message);
+}
 
 // ================================================================
 // SCHEMA — created once, safe to re-run
