@@ -182,6 +182,16 @@ CREATE TABLE IF NOT EXISTS recent_views (
   FOREIGN KEY(student_id) REFERENCES students(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  service TEXT DEFAULT 'General',
+  message TEXT NOT NULL,
+  created_at INTEGER DEFAULT (unixepoch())
+);
+
+CREATE INDEX IF NOT EXISTS idx_messages_created ON messages(created_at);
 CREATE INDEX IF NOT EXISTS idx_attempts_student ON quiz_attempts(student_id);
 CREATE INDEX IF NOT EXISTS idx_progress_student ON progress(student_id);
 CREATE INDEX IF NOT EXISTS idx_bookmarks_student ON bookmarks(student_id);
