@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Projects & Innovations | Kudenga Tech Lab</title>
+<meta name="description" content="Engineering projects from Kudenga Tech Lab — Smart Traffic with AI, Access Control, Smart Examination, and more. Explore our innovations in robotics, intelligent systems, and access control." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a1128; --surface: #101f42; --surface-light: #1c2e5a;
+    --text: #ffffff; --text-muted: #94a3b8;
+    --accent: #38bdf8; --accent-hover: #22d3ee;
+    --border: #1e3a8a; --radius: 12px; --maxw: 1200px;
+    --green: #22c55e; --amber: #f59e0b; --purple: #a855f7; --pink: #ec4899;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  a { text-decoration: none; color: inherit; }
+  img { max-width: 100%; display: block; }
+  .container { max-width: var(--maxw); margin: 0 auto; padding: 0 1.5rem; }
+
+  /* NAVBAR */
+  .navbar { background: rgba(10, 17, 40, 0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); backdrop-filter: blur(10px); }
+  .nav-inner { display: flex; justify-content: space-between; align-items: center; height: 80px; }
+  .logo { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; font-size: 0.95rem; font-weight: 500; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+  .btn-nav { background: var(--accent); color: #0a1128; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+  .btn-nav:hover { background: var(--accent-hover); }
+  .mobile-menu-btn { display: none; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+
+  /* PAGE HERO */
+  .page-hero { padding: 5rem 0 3rem; background: linear-gradient(135deg, #0a1128 0%, #0f1c3f 100%); text-align: center; border-bottom: 1px solid var(--border); }
+  .page-hero h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1rem; font-weight: 800; }
+  .page-hero h1 span { color: var(--accent); }
+  .page-hero p { color: var(--text-muted); max-width: 700px; margin: 0 auto; font-size: 1.05rem; }
+
+  /* FILTER BAR */
+  .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; padding: 2rem 0; }
+  .filter-chip { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 1.2rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; font-family: inherit; }
+  .filter-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-chip.active { background: var(--accent); color: #0a1128; border-color: var(--accent); }
+
+  /* PROJECTS GRID */
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2rem; padding-bottom: 4rem; }
+  .project-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; }
+  .project-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+  .project-card[data-hidden="true"] { display: none; }
+  .project-img { width: 100%; height: 220px; background: var(--surface-light); display: flex; align-items: center; justify-content: center; font-size: 4rem; position: relative; overflow: hidden; }
+  .project-img::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(56,189,248,0.15) 0%, transparent 70%); }
+  .project-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+  .project-tag { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; background: rgba(56,189,248,0.1); color: var(--accent); align-self: flex-start; }
+  .project-tag.cat-robotics { background: rgba(168,85,247,0.15); color: #c084fc; }
+  .project-tag.cat-electronics { background: rgba(34,197,94,0.15); color: #4ade80; }
+  .project-tag.cat-intelligent { background: rgba(56,189,248,0.15); color: var(--accent); }
+  .project-tag.cat-access { background: rgba(236,72,153,0.15); color: #f472b6; }
+  .project-body h3 { margin-bottom: 0.5rem; font-size: 1.2rem; line-height: 1.3; }
+  .project-body p { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1rem; flex: 1; }
+  .project-status { display: inline-block; font-size: 0.7rem; padding: 0.25rem 0.7rem; border-radius: 999px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; align-self: flex-start; margin-bottom: 1rem; }
+  .status-concept { background: rgba(148,163,184,0.15); color: #94a3b8; }
+  .status-development { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .status-prototype { background: rgba(168,85,247,0.15); color: var(--purple); }
+  .status-deployed { background: rgba(34,197,94,0.15); color: var(--green); }
+  .project-actions { display: flex; gap: 0.5rem; margin-top: auto; }
+  .btn { padding: 0.7rem 1.4rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; border: none; display: inline-flex; align-items: center; gap: 0.5rem; font-family: inherit; }
+  .btn-primary { background: var(--accent); color: #0a1128; }
+  .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: white; }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-sm { padding: 0.4rem 1rem; font-size: 0.82rem; }
+
+  /* CTA */
+  .cta-strip { background: linear-gradient(135deg, var(--surface) 0%, #152a54 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 3rem; text-align: center; margin-bottom: 5rem; }
+  .cta-strip h2 { font-size: 2rem; margin-bottom: 1rem; }
+  .cta-strip p { color: var(--text-muted); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 200; padding: 1.5rem; backdrop-filter: blur(4px); }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 2.5rem; position: relative; }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; color: var(--text-muted); font-size: 1.8rem; cursor: pointer; line-height: 1; padding: 0.5rem; }
+  .modal-close:hover { color: var(--accent); }
+  .modal h2 { font-size: 1.8rem; margin-bottom: 0.5rem; padding-right: 2rem; }
+  .modal .modal-meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .modal h3 { font-size: 1.1rem; color: var(--accent); margin: 1.5rem 0 0.5rem; }
+  .modal p { color: var(--text-muted); margin-bottom: 1rem; font-size: 0.95rem; }
+  .modal ul { padding-left: 1.4rem; color: var(--text-muted); margin-bottom: 1rem; font-size: 0.95rem; }
+  .modal ul li { margin-bottom: 0.4rem; }
+
+  /* FOOTER */
+  footer { background: var(--surface); border-top: 1px solid var(--border); padding: 3rem 0 2rem; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+  .footer-brand p { color: var(--text-muted); margin-top: 1rem; max-width: 300px; font-size: 0.9rem; }
+  .footer-col h4 { margin-bottom: 1rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+  .footer-col a { display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom { border-top: 1px solid var(--border); padding-top: 2rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); }
+
+  @media (max-width: 900px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .nav-links { display: none; }
+    .mobile-menu-btn { display: block; }
+  }
+  @media (max-width: 600px) {
+    .footer-grid { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .cta-strip { padding: 2rem 1.5rem; }
+    .modal { padding: 1.5rem; }
+  }
+</style>
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Kudenga Tech Lab" />
+<meta property="og:title" content="Projects & Innovations | Kudenga Tech Lab" />
+<meta property="og:description" content="Smart Traffic with AI, Access Control, Smart Examination, and more � engineering projects built in the Kudenga Tech Lab." />
+<meta property="og:url" content="https://kudengatechlab1903.netlify.app/projects.html" />
+<meta property="og:image" content="https://kudengatechlab1903.netlify.app/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Projects & Innovations | Kudenga Tech Lab" />
+<meta name="twitter:description" content="Smart Traffic with AI, Access Control, Smart Examination, and more � engineering projects built in the Kudenga Tech Lab." />
+<meta name="twitter:image" content="https://kudengatechlab1903.netlify.app/og-image.png" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">⚡ KUDENGA<span>TECH LAB</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#services">Services</a>
+      <a href="projects.html" class="active">Projects</a>
+      <a href="academy.html">Academy</a>
+      <a href="quiz.html">Quizzes</a>
+      <a href="dashboard.html">Account</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+    <a href="index.html#contact" class="btn-nav">Get Started</a>
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+  </div>
+</nav>
+
+<section class="page-hero">
+  <div class="container">
+    <h1>Projects & <span>Innovations</span></h1>
+    <p>Explore our work in robotics, intelligent systems, access control, and engineering design. Each project starts with a real problem and ends with a working system.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-chip active" data-filter="all">All Projects</button>
+      <button class="filter-chip" data-filter="intelligent">Intelligent Systems</button>
+      <button class="filter-chip" data-filter="access">Access Control</button>
+      <button class="filter-chip" data-filter="robotics">Robotics</button>
+      <button class="filter-chip" data-filter="electronics">Electronics</button>
+    </div>
+
+    <div class="projects-grid" id="projectsGrid">
+
+      <div class="project-card" data-category="intelligent" data-project="smart-traffic">
+        <div class="project-img">🚦</div>
+        <div class="project-body">
+          <span class="project-tag cat-intelligent">Intelligent Systems</span>
+          <h3>Smart Traffic & Intelligent Systems Using AI Robots</h3>
+          <p>AI-powered traffic management with emergency vehicle priority and real-time optimization.</p>
+          <span class="project-status status-development">In Development</span>
+          <div class="project-actions">
+            <button class="btn btn-primary btn-sm" data-open="smart-traffic">View Details →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card" data-category="access" data-project="lab-access">
+        <div class="project-img">🔐</div>
+        <div class="project-body">
+          <span class="project-tag cat-access">Access Control</span>
+          <h3>Project Lab Access & Control System</h3>
+          <p>Secure access, monitoring, and full lab control with role-based permissions.</p>
+          <span class="project-status status-prototype">Prototype</span>
+          <div class="project-actions">
+            <button class="btn btn-primary btn-sm" data-open="lab-access">View Details →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card" data-category="intelligent" data-project="exam-access">
+        <div class="project-img">📱</div>
+        <div class="project-body">
+          <span class="project-tag cat-intelligent">Intelligent Systems</span>
+          <h3>Integrated Smart Examination Access System</h3>
+          <p>Student attendance, eligibility verification, and examination access management.</p>
+          <span class="project-status status-concept">Concept</span>
+          <div class="project-actions">
+            <button class="btn btn-primary btn-sm" data-open="exam-access">View Details →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card" data-category="robotics" data-project="robot-arm">
+        <div class="project-img">🦾</div>
+        <div class="project-body">
+          <span class="project-tag cat-robotics">Robotics</span>
+          <h3>2-DoF Robotic Arm with Inverse Kinematics</h3>
+          <p>A two-joint servo arm with real-time inverse kinematics calculation in Arduino.</p>
+          <span class="project-status status-prototype">Prototype</span>
+          <div class="project-actions">
+            <button class="btn btn-primary btn-sm" data-open="robot-arm">View Details →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card" data-category="electronics" data-project="plant-waterer">
+        <div class="project-img">🌱</div>
+        <div class="project-body">
+          <span class="project-tag cat-electronics">Electronics</span>
+          <h3>Automated Plant Watering System</h3>
+          <p>Soil moisture sensor + relay + pump. A complete IoT automation project.</p>
+          <span class="project-status status-deployed">Deployed</span>
+          <div class="project-actions">
+            <button class="btn btn-primary btn-sm" data-open="plant-waterer">View Details →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card" data-category="electronics" data-project="esp32-sensor">
+        <div class="project-img">📶</div>
+        <div class="project-body">
+          <span class="project-tag cat-electronics">Electronics</span>
+          <h3>ESP32 WiFi Sensor Dashboard</h3>
+          <p>DHT22 temperature and humidity streamed to a live web dashboard over WiFi.</p>
+          <span class="project-status status-prototype">Prototype</span>
+          <div class="project-actions">
+            <button class="btn btn-primary btn-sm" data-open="esp32-sensor">View Details →</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="cta-strip">
+      <h2>Have a Project Idea?</h2>
+      <p>Submit your project idea and we'll help you turn it into a working system. From concept to prototype — we guide you through every step.</p>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="index.html#contact" class="btn btn-primary">Submit Project Idea →</a>
+        <a href="index.html#services" class="btn btn-outline">Explore Services</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">⚡ KUDENGA<span>TECH LAB</span></a>
+        <p>Turning Curiosity Into Working Systems. Empowering the next generation of innovators in Zambia.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#services">Services</a>
+        <a href="projects.html">Projects</a>
+        <a href="index.html#contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>Follow Us</h4>
+        <a href="#">TikTok</a>
+        <a href="#">WhatsApp</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">GitHub</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Kudenga Tech Lab. All rights reserved.</p>
+      <p>Powered by Innovation ⚡</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile menu
+  document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+    const nav = document.querySelector('.nav-links');
+    const isOpen = nav.style.display === 'flex';
+    nav.style.display = isOpen ? 'none' : 'flex';
+    nav.style.flexDirection = 'column';
+    nav.style.position = 'absolute';
+    nav.style.top = '80px';
+    nav.style.left = '0';
+    nav.style.width = '100%';
+    nav.style.background = 'var(--surface)';
+    nav.style.padding = '1rem';
+    nav.style.zIndex = '99';
+  });
+
+  // Filter
+  document.getElementById('filterBar').addEventListener('click', (e) => {
+    const chip = e.target.closest('.filter-chip');
+    if (!chip) return;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    const filter = chip.dataset.filter;
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.dataset.hidden = (filter !== 'all' && card.dataset.category !== filter) ? 'true' : 'false';
+    });
+  });
+
+  // Project data (detailed content for modals)
+  const projects = {
+    'smart-traffic': {
+      title: 'Smart Traffic & Intelligent Systems Using AI Robots',
+      category: 'Intelligent Systems',
+      status: 'In Development',
+      problem: 'Traditional traffic lights operate on fixed timing cycles. During peak hours or emergencies, this causes unnecessary congestion and delays for emergency vehicles.',
+      solution: 'An AI-powered traffic management system that uses computer vision and sensor fusion to detect vehicle density, adapt light timing in real time, and prioritize emergency vehicles.',
+      tech: ['Raspberry Pi 4', 'OpenCV + Python', 'YOLOv8 object detection', 'Ultrasonic + IR sensors', 'Custom relay control board', 'Node.js dashboard'],
+      features: ['Real-time vehicle counting', 'Dynamic light timing', 'Emergency vehicle detection', 'Traffic density dashboard', 'Historical data logging'],
+      future: 'Planned upgrades include multi-intersection coordination, integration with city traffic APIs, and pedestrian detection.'
+    },
+    'lab-access': {
+      title: 'Project Lab Access & Control System',
+      category: 'Access Control',
+      status: 'Prototype',
+      problem: 'Lab equipment is expensive and often misused by unauthorized personnel. Manual key management fails to provide accountability or real-time monitoring.',
+      solution: 'A role-based access control system using RFID cards, PIN codes, and a web dashboard that logs every entry, tracks equipment usage, and alerts on unauthorized attempts.',
+      tech: ['Arduino Mega', 'RFID-RC522 reader', '4x4 keypad', 'Solenoid lock', 'OLED display', 'Express.js + SQLite backend'],
+      features: ['RFID + PIN authentication', 'Role-based permissions', 'Entry/exit logging', 'Equipment checkout tracking', 'Real-time web dashboard', 'Unauthorized attempt alerts'],
+      future: 'Adding biometric authentication and integration with the university student database.'
+    },
+    'exam-access': {
+      title: 'Integrated Smart Examination Access System',
+      category: 'Intelligent Systems',
+      status: 'Concept',
+      problem: 'Manual examination eligibility checks are slow, error-prone, and create bottlenecks. Students without clearance slip through and cause disruptions.',
+      solution: 'An integrated web platform that verifies student attendance, fee status, and course eligibility before granting exam access — with a QR-code based check-in at exam halls.',
+      tech: ['Web app (planned: Node.js + React)', 'QR code generation', 'Student database integration', 'Mobile check-in scanner', 'Admin dashboard'],
+      features: ['Automatic eligibility verification', 'QR code exam passes', 'Hall-by-hall check-in', 'Real-time attendance tracking', 'Reports for examination officers'],
+      future: 'Phase 1 focuses on the web portal. Phase 2 adds the mobile scanner app and integration with the university portal.'
+    },
+    'robot-arm': {
+      title: '2-DoF Robotic Arm with Inverse Kinematics',
+      category: 'Robotics',
+      status: 'Prototype',
+      problem: 'Teaching robotics concepts requires hands-on examples. Most robotic arms are expensive and inaccessible to students.',
+      solution: 'A low-cost, 3D-printable 2-degree-of-freedom robotic arm controlled by two servo motors, with real-time inverse kinematics computed in Arduino.',
+      tech: ['Arduino Uno', '2x SG90/MG996R servos', '3D-printed arm segments', 'External 5V power supply', 'Inverse kinematics math (law of cosines)'],
+      features: ['Reach to any (x, y) coordinate', 'Angle calculation in real-time', 'Educational documentation', 'Step-by-step build guide'],
+      future: 'Extending to 3-DoF with a gripper end effector and adding a Python control interface.'
+    },
+    'plant-waterer': {
+      title: 'Automated Plant Watering System',
+      category: 'Electronics',
+      status: 'Deployed',
+      problem: 'Plants die from over-watering or under-watering. Manual schedules don\'t account for actual soil moisture or seasonal variations.',
+      solution: 'A soil moisture sensor triggers a relay-driven pump only when the soil is dry — eliminating watering schedules and adapting to real conditions.',
+      tech: ['Arduino Uno', 'Soil moisture sensor', '5V relay module', 'Small DC water pump', 'Tubing + reservoir'],
+      features: ['Automatic watering on dry soil', 'Serial monitor for soil readings', 'Adjustable moisture threshold', 'Low power consumption'],
+      future: 'Adding a WiFi module for remote monitoring and mobile alerts.'
+    },
+    'esp32-sensor': {
+      title: 'ESP32 WiFi Sensor Dashboard',
+      category: 'Electronics',
+      status: 'Prototype',
+      problem: 'Standalone environmental sensors require you to physically check them. There\'s no way to see readings remotely.',
+      solution: 'An ESP32 with a DHT22 sensor that streams temperature and humidity to a local web dashboard — accessible from any device on the same network.',
+      tech: ['ESP32 dev board', 'DHT22 sensor', 'Arduino IDE', 'HTML/JS web server (built-in)', '10kΩ pull-up resistor'],
+      features: ['Live temperature readings', 'Live humidity readings', 'Auto-refresh every 5 seconds', 'Runs entirely on the ESP32 (no external server)'],
+      future: 'Extending to log data to the cloud and add historical charts.'
+    }
+  };
+
+  // Modal open
+  document.querySelectorAll('[data-open]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.open;
+      const p = projects[id];
+      if (!p) return;
+      const tech = p.tech.map(t => `<li>${t}</li>`).join('');
+      const feats = p.features.map(f => `<li>${f}</li>`).join('');
+      document.getElementById('modalContent').innerHTML = `
+        <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+        <h2>${p.title}</h2>
+        <p class="modal-meta">${p.category} · ${p.status}</p>
+        <h3>Problem</h3>
+        <p>${p.problem}</p>
+        <h3>Proposed Solution</h3>
+        <p>${p.solution}</p>
+        <h3>Technology Used</h3>
+        <ul>${tech}</ul>
+        <h3>Key Features</h3>
+        <ul>${feats}</ul>
+        <h3>Future Improvements</h3>
+        <p>${p.future}</p>
+      `;
+      document.getElementById('modalOverlay').classList.add('show');
+      document.getElementById('modalClose').addEventListener('click', closeModal);
+    });
+  });
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('show');
+  }
+
+  document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'modalOverlay') closeModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.getElementById('modalOverlay').classList.contains('show')) closeModal();
+  });
+
+  // Smooth scroll for internal anchors
+  document.querySelectorAll('a[href*="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const href = this.getAttribute('href');
+      if (!href.includes('#')) return;
+      const [path, hash] = href.split('#');
+      if (path && path !== '' && path !== window.location.pathname.split('/').pop()) {
+        return; // let browser navigate
+      }
+      e.preventDefault();
+      const target = document.getElementById(hash);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>

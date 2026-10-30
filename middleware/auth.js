@@ -1,15 +1,22 @@
-function requireAdmin(req, res, next) {
-  if (req.session && req.session.role === 'admin') {
-    return next();
+function requireAuth(req, res, next) {
+  if (!req.session.studentId && !req.session.adminId) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
-  return res.status(401).json({ error: 'Admin access required' });
+  next();
 }
 
 function requireStudent(req, res, next) {
-  if (req.session && req.session.studentId) {
-    return next();
+  if (!req.session.studentId) {
+    return res.status(401).json({ error: 'Student login required' });
   }
-  return res.status(401).json({ error: 'Student login required' });
+  next();
 }
 
-module.exports = { requireAdmin, requireStudent };
+function requireAdmin(req, res, next) {
+  if (!req.session.adminId) {
+    return res.status(403).json({ error: 'Admin login required' });
+  }
+  next();
+}
+
+module.exports = { requireAuth, requireStudent, requireAdmin };

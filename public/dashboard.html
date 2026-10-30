@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Account | Kudenga Tech Lab</title>
+<meta name="description" content="Sign in to track your quiz scores, monitor your learning progress, and save your achievements at Kudenga Engineering Academy." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a1128; --surface: #101f42; --surface-light: #1c2e5a;
+    --text: #ffffff; --text-muted: #94a3b8;
+    --accent: #38bdf8; --accent-hover: #22d3ee;
+    --border: #1e3a8a; --radius: 12px; --maxw: 1200px;
+    --green: #22c55e; --red: #ef4444; --amber: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+  a { text-decoration: none; color: inherit; }
+  .container { max-width: var(--maxw); margin: 0 auto; padding: 0 1.5rem; width: 100%; }
+  main { flex: 1; }
+
+  /* NAVBAR */
+  .navbar { background: rgba(10, 17, 40, 0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); backdrop-filter: blur(10px); }
+  .nav-inner { display: flex; justify-content: space-between; align-items: center; height: 80px; }
+  .logo { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; font-size: 0.95rem; font-weight: 500; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+  .btn-nav { background: var(--accent); color: #0a1128; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+  .btn-nav:hover { background: var(--accent-hover); }
+  .mobile-menu-btn { display: none; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+
+  /* PAGE HERO */
+  .page-hero { padding: 4rem 0 2rem; text-align: center; }
+  .page-hero h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 1rem; font-weight: 800; }
+  .page-hero h1 span { color: var(--accent); }
+  .page-hero p { color: var(--text-muted); max-width: 620px; margin: 0 auto; font-size: 1.05rem; }
+
+  section { padding: 2rem 0 4rem; }
+
+  /* AUTH FORM */
+  .auth-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; max-width: 480px; margin: 0 auto; }
+  .auth-tabs { display: flex; gap: 0.3rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .auth-tab { background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--text-muted); padding: 0.6rem 1rem; font-weight: 500; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+  .auth-tab:hover { color: var(--text); }
+  .auth-tab.active { color: var(--text); border-bottom-color: var(--accent); }
+
+  .form-group { margin-bottom: 1.2rem; }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-muted); }
+  .form-group input { width: 100%; padding: 0.8rem 1rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: white; font: inherit; outline: none; transition: 0.2s; }
+  .form-group input:focus { border-color: var(--accent); }
+  .form-error { color: var(--red); font-size: 0.85rem; margin-top: 0.4rem; display: none; }
+  .form-error.show { display: block; }
+  .form-success { color: var(--green); font-size: 0.85rem; margin-top: 0.4rem; display: none; }
+  .form-success.show { display: block; }
+  .form-notice { background: rgba(56,189,248,0.1); border: 1px solid var(--accent); color: var(--text); padding: 0.8rem 1rem; border-radius: 8px; font-size: 0.88rem; margin-bottom: 1.2rem; display: none; }
+  .form-notice.show { display: block; }
+
+  .btn { padding: 0.8rem 1.4rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: 0.2s; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-family: inherit; }
+  .btn-primary { background: var(--accent); color: #0a1128; width: 100%; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: white; }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-sm { padding: 0.5rem 1rem; font-size: 0.85rem; }
+
+  .auth-switch { text-align: center; margin-top: 1.2rem; font-size: 0.9rem; color: var(--text-muted); }
+  .auth-switch a { color: var(--accent); cursor: pointer; text-decoration: underline; }
+
+  /* DASHBOARD */
+  .dash-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+  .dash-header h2 { font-size: 1.6rem; margin-bottom: 0.25rem; }
+  .dash-header p { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2.5rem; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; text-align: center; }
+  .stat-num { font-size: 2.4rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 0.5rem; }
+  .stat-label { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .section-title { font-size: 1.3rem; margin-bottom: 1rem; }
+
+  .attempts-list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .attempt-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.4rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .attempt-row:hover { border-color: var(--accent); }
+  .attempt-info { flex: 1; min-width: 200px; }
+  .attempt-title { font-weight: 600; margin-bottom: 0.2rem; }
+  .attempt-date { color: var(--text-muted); font-size: 0.82rem; }
+  .attempt-score { font-size: 1.4rem; font-weight: 800; }
+  .attempt-score.excellent { color: var(--green); }
+  .attempt-score.good { color: var(--accent); }
+  .attempt-score.fail { color: var(--red); }
+  .attempt-pct { color: var(--text-muted); font-size: 0.85rem; }
+
+  .empty-state { background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius); padding: 3rem 1.5rem; text-align: center; }
+  .empty-state h3 { margin-bottom: 0.5rem; }
+  .empty-state p { color: var(--text-muted); margin-bottom: 1.5rem; }
+
+  .dash-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 2rem; }
+
+  /* MISC */
+  .status-msg { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+  .status-msg.error { color: var(--red); }
+
+  /* FOOTER */
+  footer { background: var(--surface); border-top: 1px solid var(--border); padding: 3rem 0 2rem; margin-top: 4rem; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+  .footer-brand p { color: var(--text-muted); margin-top: 1rem; max-width: 300px; font-size: 0.9rem; }
+  .footer-col h4 { margin-bottom: 1rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+  .footer-col a { display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom { border-top: 1px solid var(--border); padding-top: 2rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); }
+
+  @media (max-width: 900px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .nav-links { display: none; }
+    .mobile-menu-btn { display: block; }
+  }
+  @media (max-width: 600px) {
+    .footer-grid { grid-template-columns: 1fr; }
+    .auth-card { padding: 1.5rem; }
+    .attempt-row { flex-direction: column; align-items: flex-start; }
+    .stat-num { font-size: 2rem; }
+  }
+</style>
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Kudenga Tech Lab" />
+<meta property="og:title" content="My Account | Kudenga Tech Lab" />
+<meta property="og:description" content="Sign in to track your quiz scores, monitor your learning progress, and save your achievements." />
+<meta property="og:url" content="https://kudengatechlab1903.netlify.app/dashboard.html" />
+<meta property="og:image" content="https://kudengatechlab1903.netlify.app/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="My Account | Kudenga Tech Lab" />
+<meta name="twitter:description" content="Sign in to track your quiz scores, monitor your learning progress, and save your achievements." />
+<meta name="twitter:image" content="https://kudengatechlab1903.netlify.app/og-image.png" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">⚡ KUDENGA<span>TECH LAB</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#services">Services</a>
+      <a href="projects.html">Projects</a>
+      <a href="academy.html">Academy</a>
+      <a href="quiz.html">Quizzes</a>
+      <a href="dashboard.html" class="active">Account</a>
+    </div>
+    <a href="quiz.html" class="btn-nav">Take a Quiz</a>
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+  </div>
+</nav>
+
+<main>
+  <!-- AUTH VIEW -->
+  <div id="authView">
+    <section class="page-hero">
+      <div class="container">
+        <h1>My <span>Account</span></h1>
+        <p>Sign in to save your quiz results, track your progress, and unlock your achievements.</p>
+      </div>
+    </section>
+    <section>
+      <div class="container">
+        <div class="auth-card">
+          <div class="form-notice" id="noticeBox"></div>
+          <div class="auth-tabs">
+            <button type="button" class="auth-tab active" data-tab="login">Sign In</button>
+            <button type="button" class="auth-tab" data-tab="register">Create Account</button>
+          </div>
+
+          <!-- LOGIN -->
+          <form id="loginForm">
+            <div class="form-group">
+              <label for="loginEmail">Email</label>
+              <input type="email" id="loginEmail" required autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label for="loginPassword">Password</label>
+              <input type="password" id="loginPassword" required autocomplete="current-password" />
+            </div>
+            <div class="form-error" id="loginError"></div>
+            <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
+            <div class="auth-switch">
+              No account? <a data-switch="register">Create one</a>
+            </div>
+          </form>
+
+          <!-- REGISTER -->
+          <form id="registerForm" style="display:none;">
+            <div class="form-group">
+              <label for="regName">Full Name</label>
+              <input type="text" id="regName" required autocomplete="name" />
+            </div>
+            <div class="form-group">
+              <label for="regEmail">Email</label>
+              <input type="email" id="regEmail" required autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label for="regPassword">Password (min 6 characters)</label>
+              <input type="password" id="regPassword" required minlength="6" autocomplete="new-password" />
+            </div>
+            <div class="form-group">
+              <label for="regConfirm">Confirm Password</label>
+              <input type="password" id="regConfirm" required autocomplete="new-password" />
+            </div>
+            <div class="form-error" id="registerError"></div>
+            <div class="form-success" id="registerSuccess"></div>
+            <button type="submit" class="btn btn-primary" id="registerBtn">Create Account</button>
+            <div class="auth-switch">
+              Already have an account? <a data-switch="login">Sign in</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- DASHBOARD VIEW -->
+  <div id="dashView" style="display:none;">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Welcome, <span id="dashName">Student</span></h1>
+        <p>Track your learning progress and view your quiz history.</p>
+      </div>
+    </section>
+    <section>
+      <div class="container" style="max-width: 960px;">
+        <div class="dash-header">
+          <div>
+            <p id="dashEmail"></p>
+          </div>
+          <button class="btn btn-outline btn-sm" id="logoutBtn">Log Out</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-num" id="statCount">0</div>
+            <div class="stat-label">Quizzes Taken</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statAvg">—</div>
+            <div class="stat-label">Average Score</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statBest">—</div>
+            <div class="stat-label">Best Score</div>
+          </div>
+        </div>
+
+        <h2 class="section-title">Recent Quiz Attempts</h2>
+        <div id="attemptsBox">
+          <div class="status-msg">Loading…</div>
+        </div>
+
+        <div class="dash-actions">
+          <a href="quiz.html" class="btn btn-outline">Take another quiz →</a>
+          <a href="academy.html" class="btn btn-outline">Browse notes</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">⚡ KUDENGA<span>TECH LAB</span></a>
+        <p>Turning Curiosity Into Working Systems. Empowering the next generation of innovators in Zambia.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="projects.html">Projects</a>
+        <a href="academy.html">Academy</a>
+        <a href="quiz.html">Quizzes</a>
+        <a href="dashboard.html">Account</a>
+      </div>
+      <div class="footer-col">
+        <h4>Follow Us</h4>
+        <a href="#">TikTok</a>
+        <a href="#">WhatsApp</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">GitHub</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Kudenga Tech Lab. All rights reserved.</p>
+      <p>Powered by Innovation ⚡</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile menu
+  document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+    const nav = document.querySelector('.nav-links');
+    const isOpen = nav.style.display === 'flex';
+    nav.style.display = isOpen ? 'none' : 'flex';
+    nav.style.flexDirection = 'column';
+    nav.style.position = 'absolute';
+    nav.style.top = '80px';
+    nav.style.left = '0';
+    nav.style.width = '100%';
+    nav.style.background = 'var(--surface)';
+    nav.style.padding = '1rem';
+    nav.style.zIndex = '99';
+  });
+
+  function esc(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function showNotice(msg) {
+    const box = document.getElementById('noticeBox');
+    if (!msg) { box.classList.remove('show'); box.textContent = ''; return; }
+    box.textContent = msg;
+    box.classList.add('show');
+  }
+
+  // Tab switching
+  document.querySelectorAll('.auth-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const isLogin = tab.dataset.tab === 'login';
+      document.getElementById('loginForm').style.display = isLogin ? 'block' : 'none';
+      document.getElementById('registerForm').style.display = isLogin ? 'none' : 'block';
+      document.getElementById('loginError').classList.remove('show');
+      document.getElementById('registerError').classList.remove('show');
+      document.getElementById('registerSuccess').classList.remove('show');
+      showNotice('');
+    });
+  });
+
+  document.querySelectorAll('[data-switch]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.querySelector(`.auth-tab[data-tab="${link.dataset.switch}"]`);
+      if (target) target.click();
+    });
+  });
+
+  // LOGIN
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const password = document.getElementById('loginPassword').value;
+    const errEl = document.getElementById('loginError');
+    const btn = document.getElementById('loginBtn');
+    errEl.classList.remove('show');
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+
+    try {
+      const res = await fetch('/api/auth/login-student', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Login failed');
+      await checkSession();
+    } catch (err) {
+      errEl.textContent = err.message || 'Login failed. Check your email and password.';
+      errEl.classList.add('show');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
+  });
+
+  // REGISTER
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const password = document.getElementById('regPassword').value;
+    const confirm = document.getElementById('regConfirm').value;
+    const errEl = document.getElementById('registerError');
+    const okEl = document.getElementById('registerSuccess');
+    const btn = document.getElementById('registerBtn');
+    errEl.classList.remove('show');
+    okEl.classList.remove('show');
+
+    if (password.length < 6) {
+      errEl.textContent = 'Password must be at least 6 characters.';
+      errEl.classList.add('show');
+      return;
+    }
+    if (password !== confirm) {
+      errEl.textContent = 'Passwords do not match.';
+      errEl.classList.add('show');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Creating account…';
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ name, email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+      // Try to auto-login after register
+      const loginRes = await fetch('/api/auth/login-student', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ email, password })
+      });
+
+      if (loginRes.ok) {
+        await checkSession();
+      } else {
+        okEl.textContent = 'Account created! Please sign in.';
+        okEl.classList.add('show');
+        document.querySelector('.auth-tab[data-tab="login"]').click();
+        document.getElementById('loginEmail').value = email;
+      }
+    } catch (err) {
+      errEl.textContent = err.message || 'Registration failed.';
+      errEl.classList.add('show');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    }
+  });
+
+  // LOGOUT
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+    } catch (e) {}
+    document.getElementById('dashView').style.display = 'none';
+    document.getElementById('authView').style.display = 'block';
+    document.getElementById('loginForm').reset();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // SESSION CHECK
+  async function checkSession() {
+    try {
+      const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
+      const data = await res.json();
+      if (data.student) {
+        showDashboard(data.student);
+      } else {
+        showAuth();
+      }
+    } catch (err) {
+      showAuth();
+    }
+  }
+
+  function showAuth() {
+    document.getElementById('authView').style.display = 'block';
+    document.getElementById('dashView').style.display = 'none';
+  }
+
+  async function showDashboard(student) {
+    document.getElementById('authView').style.display = 'none';
+    document.getElementById('dashView').style.display = 'block';
+    document.getElementById('dashName').textContent = (student.name || 'Student').split(' ')[0];
+    document.getElementById('dashEmail').textContent = student.email || '';
+
+    const attemptsBox = document.getElementById('attemptsBox');
+    attemptsBox.innerHTML = '<div class="status-msg">Loading quiz history…</div>';
+
+    try {
+      const res = await fetch('/api/me/quiz-attempts', { credentials: 'same-origin' });
+      if (!res.ok) throw new Error('Failed to load attempts');
+      const attempts = await res.json();
+
+      const list = Array.isArray(attempts) ? attempts : [];
+      document.getElementById('statCount').textContent = list.length;
+
+      if (list.length > 0) {
+        const pcts = list.map(a => Math.round((a.score / a.total) * 100));
+        const avg = Math.round(pcts.reduce((s, x) => s + x, 0) / pcts.length);
+        const best = Math.max(...pcts);
+        document.getElementById('statAvg').textContent = avg + '%';
+        document.getElementById('statBest').textContent = best + '%';
+
+        // Sort by date desc
+        const sorted = list.slice().sort((a, b) => (b.created_at || b.date || 0) - (a.created_at || a.date || 0));
+        attemptsBox.innerHTML = '<div class="attempts-list">' + sorted.map(a => {
+          const pct = Math.round((a.score / a.total) * 100);
+          const cls = pct >= 80 ? 'excellent' : pct >= 60 ? 'good' : 'fail';
+          const date = a.created_at ? new Date(a.created_at * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : (a.date ? new Date(a.date).toLocaleString() : '');
+          const title = a.title || a.quizKey || a.quiz_key || 'Quiz';
+          return `
+            <div class="attempt-row">
+              <div class="attempt-info">
+                <div class="attempt-title">${esc(title)}</div>
+                <div class="attempt-date">${esc(date)}</div>
+              </div>
+              <div>
+                <div class="attempt-score ${cls}">${a.score}/${a.total}</div>
+                <div class="attempt-pct">${pct}%</div>
+              </div>
+            </div>
+          `;
+        }).join('') + '</div>';
+      } else {
+        attemptsBox.innerHTML = `
+          <div class="empty-state">
+            <h3>No quiz attempts yet</h3>
+            <p>Take your first quiz to see your scores here.</p>
+            <a href="quiz.html" class="btn btn-outline">Take a Quiz →</a>
+          </div>
+        `;
+        document.getElementById('statAvg').textContent = '—';
+        document.getElementById('statBest').textContent = '—';
+      }
+    } catch (err) {
+      console.error(err);
+      attemptsBox.innerHTML = '<div class="status-msg error">Could not load quiz history.</div>';
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Init
+  checkSession();
+</script>
+</body>
+</html>

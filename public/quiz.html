@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Engineering Quizzes | Kudenga Engineering Academy</title>
+<meta name="description" content="Test your engineering knowledge with scored quizzes on electronics, robotics, AI, programming, and simulation. Instant feedback with explanations." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a1128; --surface: #101f42; --surface-light: #1c2e5a;
+    --text: #ffffff; --text-muted: #94a3b8;
+    --accent: #38bdf8; --accent-hover: #22d3ee;
+    --border: #1e3a8a; --radius: 12px; --maxw: 1200px;
+    --green: #22c55e; --red: #ef4444; --amber: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+  a { text-decoration: none; color: inherit; }
+  .container { max-width: var(--maxw); margin: 0 auto; padding: 0 1.5rem; width: 100%; }
+  main { flex: 1; }
+
+  /* NAVBAR */
+  .navbar { background: rgba(10, 17, 40, 0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); backdrop-filter: blur(10px); }
+  .nav-inner { display: flex; justify-content: space-between; align-items: center; height: 80px; }
+  .logo { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; font-size: 0.95rem; font-weight: 500; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+  .btn-nav { background: var(--accent); color: #0a1128; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+  .btn-nav:hover { background: var(--accent-hover); }
+  .mobile-menu-btn { display: none; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+
+  /* PAGE HERO */
+  .page-hero { padding: 4rem 0 2rem; text-align: center; }
+  .page-hero h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 1rem; font-weight: 800; }
+  .page-hero h1 span { color: var(--accent); }
+  .page-hero p { color: var(--text-muted); max-width: 620px; margin: 0 auto; font-size: 1.05rem; }
+
+  /* SECTIONS */
+  section { padding: 2rem 0 4rem; }
+  .section-header { margin-bottom: 2rem; }
+  .section-header h2 { font-size: 1.6rem; margin-bottom: 0.5rem; }
+
+  /* QUIZ PICKER */
+  .quiz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+  .quiz-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem; transition: 0.3s; cursor: pointer; display: flex; flex-direction: column; }
+  .quiz-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+  .quiz-card-icon { font-size: 2.2rem; margin-bottom: 1rem; }
+  .quiz-card-level { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; align-self: flex-start; }
+  .lvl-beginner { background: rgba(34,197,94,0.15); color: #4ade80; }
+  .lvl-intermediate { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .lvl-advanced { background: rgba(236,72,153,0.15); color: #f472b6; }
+  .quiz-card h3 { font-size: 1.15rem; margin-bottom: 0.5rem; }
+  .quiz-card p { color: var(--text-muted); font-size: 0.9rem; flex: 1; margin-bottom: 1rem; }
+  .quiz-card-meta { font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; display: flex; justify-content: space-between; align-items: center; }
+  .quiz-card-meta .start { color: var(--accent); font-weight: 600; }
+
+  /* PLAYER */
+  .player { display: none; max-width: 760px; margin: 0 auto; }
+  .player.active { display: block; }
+  .progress-wrap { margin-bottom: 1.5rem; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+  .progress-bar { height: 8px; background: var(--surface); border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0; background: var(--accent); transition: width 0.3s ease; }
+
+  .question-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; }
+  .q-text { font-size: 1.15rem; font-weight: 600; margin-bottom: 1.5rem; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 0.6rem; }
+  .option-btn { text-align: left; padding: 0.9rem 1.2rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font: inherit; font-size: 0.95rem; cursor: pointer; transition: 0.15s; display: flex; align-items: flex-start; gap: 0.75rem; }
+  .option-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--surface-light); }
+  .option-btn:disabled { cursor: default; }
+  .option-btn .option-letter { font-weight: 700; color: var(--accent); flex-shrink: 0; }
+  .option-btn.correct { border-color: var(--green); background: rgba(34,197,94,0.12); }
+  .option-btn.correct .option-letter { color: var(--green); }
+  .option-btn.wrong { border-color: var(--red); background: rgba(239,68,68,0.12); }
+  .option-btn.wrong .option-letter { color: var(--red); }
+
+  .feedback { margin-top: 1.5rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.92rem; display: none; }
+  .feedback.show { display: block; }
+  .feedback.correct { background: rgba(34,197,94,0.12); border: 1px solid var(--green); color: #bbf7d0; }
+  .feedback.wrong { background: rgba(239,68,68,0.12); border: 1px solid var(--red); color: #fecaca; }
+  .feedback strong { display: block; margin-bottom: 0.3rem; }
+  .feedback .explanation { margin-top: 0.5rem; color: var(--text-muted); font-size: 0.88rem; }
+
+  .actions { margin-top: 1.5rem; display: flex; justify-content: flex-end; }
+  .btn { padding: 0.7rem 1.4rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; border: none; display: inline-flex; align-items: center; gap: 0.5rem; font-family: inherit; }
+  .btn-primary { background: var(--accent); color: #0a1128; }
+  .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: white; }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* RESULT */
+  .result { display: none; text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 3rem 2rem; max-width: 600px; margin: 0 auto; }
+  .result.active { display: block; }
+  .result-score { font-size: 4rem; font-weight: 800; line-height: 1; margin-bottom: 0.5rem; }
+  .result-score.excellent { color: var(--green); }
+  .result-score.good { color: var(--accent); }
+  .result-score.fail { color: var(--red); }
+  .result-pct { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 1rem; }
+  .result-msg { font-size: 1.1rem; margin-bottom: 2rem; }
+  .result-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+  .result-login-note { margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted); }
+  .result-login-note a { color: var(--accent); text-decoration: underline; }
+
+  /* MISC */
+  .status-msg { text-align: center; padding: 3rem 1rem; color: var(--text-muted); grid-column: 1/-1; }
+  .status-msg.error { color: var(--red); }
+
+  /* FOOTER */
+  footer { background: var(--surface); border-top: 1px solid var(--border); padding: 3rem 0 2rem; margin-top: 4rem; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+  .footer-brand p { color: var(--text-muted); margin-top: 1rem; max-width: 300px; font-size: 0.9rem; }
+  .footer-col h4 { margin-bottom: 1rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+  .footer-col a { display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom { border-top: 1px solid var(--border); padding-top: 2rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); }
+
+  @media (max-width: 900px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .nav-links { display: none; }
+    .mobile-menu-btn { display: block; }
+  }
+  @media (max-width: 600px) {
+    .footer-grid { grid-template-columns: 1fr; }
+    .question-card { padding: 1.5rem; }
+    .result { padding: 2rem 1.5rem; }
+    .result-score { font-size: 3rem; }
+  }
+</style>
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Kudenga Tech Lab" />
+<meta property="og:title" content="Engineering Quizzes | Kudenga Engineering Academy" />
+<meta property="og:description" content="Test your knowledge of electronics, robotics, AI, and programming with scored quizzes and instant feedback." />
+<meta property="og:url" content="https://kudengatechlab1903.netlify.app/quiz.html" />
+<meta property="og:image" content="https://kudengatechlab1903.netlify.app/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Engineering Quizzes | Kudenga Engineering Academy" />
+<meta name="twitter:description" content="Test your knowledge of electronics, robotics, AI, and programming with scored quizzes and instant feedback." />
+<meta name="twitter:image" content="https://kudengatechlab1903.netlify.app/og-image.png" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">⚡ KUDENGA<span>TECH LAB</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#services">Services</a>
+      <a href="projects.html">Projects</a>
+      <a href="academy.html">Academy</a>
+      <a href="quiz.html" class="active">Quizzes</a>
+      <a href="dashboard.html">Account</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+    <a href="index.html#contact" class="btn-nav">Get Started</a>
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+  </div>
+</nav>
+
+<main>
+  <!-- PICKER VIEW -->
+  <div id="pickerView">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Test Your <span>Knowledge</span></h1>
+        <p>Scored quizzes with instant feedback and explanations. Choose a topic and see how you do.</p>
+      </div>
+    </section>
+    <section>
+      <div class="container">
+        <div class="quiz-grid" id="quizGrid">
+          <div class="status-msg">Loading quizzes…</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- PLAYER VIEW -->
+  <div id="playerView" class="player">
+    <section class="page-hero" style="padding: 3rem 0 1rem;">
+      <div class="container" style="max-width: 760px;">
+        <h1 id="playerTitle" style="font-size: 1.6rem; margin-bottom: 0.5rem;">Quiz</h1>
+        <p id="playerLevel" style="font-size: 0.9rem;"></p>
+      </div>
+    </section>
+    <section style="padding-top: 1rem;">
+      <div class="container" style="max-width: 760px;">
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span id="progressText">Question 1 of 5</span>
+            <span id="progressScore">0 correct</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+
+        <div class="question-card">
+          <div class="q-text" id="qText">Loading…</div>
+          <div class="options" id="optionsBox"></div>
+          <div class="feedback" id="feedback"></div>
+          <div class="actions">
+            <button class="btn btn-primary" id="nextBtn" style="display:none;">Next →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- RESULT VIEW -->
+  <div id="resultView">
+    <section class="page-hero" style="padding: 4rem 0 2rem;">
+      <div class="container" style="max-width: 620px;">
+        <div class="result" id="resultCard">
+          <div class="result-score" id="resultScore">0/5</div>
+          <div class="result-pct" id="resultPct">0%</div>
+          <div class="result-msg" id="resultMsg"></div>
+          <div class="result-actions">
+            <button class="btn btn-primary" id="retryBtn">Try Again</button>
+            <button class="btn btn-outline" id="otherBtn">Choose Another Quiz</button>
+          </div>
+          <div class="result-login-note" id="loginNote"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">⚡ KUDENGA<span>TECH LAB</span></a>
+        <p>Turning Curiosity Into Working Systems. Empowering the next generation of innovators in Zambia.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="index.html#about">About</a>
+        <a href="projects.html">Projects</a>
+        <a href="academy.html">Academy</a>
+        <a href="quiz.html">Quizzes</a>
+      <a href="dashboard.html">Account</a>
+      </div>
+      <div class="footer-col">
+        <h4>Follow Us</h4>
+        <a href="#">TikTok</a>
+        <a href="#">WhatsApp</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">GitHub</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Kudenga Tech Lab. All rights reserved.</p>
+      <p>Powered by Innovation ⚡</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile menu
+  document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+    const nav = document.querySelector('.nav-links');
+    const isOpen = nav.style.display === 'flex';
+    nav.style.display = isOpen ? 'none' : 'flex';
+    nav.style.flexDirection = 'column';
+    nav.style.position = 'absolute';
+    nav.style.top = '80px';
+    nav.style.left = '0';
+    nav.style.width = '100%';
+    nav.style.background = 'var(--surface)';
+    nav.style.padding = '1rem';
+    nav.style.zIndex = '99';
+  });
+
+  const state = {
+    quizzes: {},
+    current: null,       // { key, title, level, questions }
+    currentKey: null,
+    index: 0,
+    score: 0,
+    answered: false
+  };
+
+  const QUIZ_ICONS = {
+    basics: '⚡', components: '🔧', electronics: '🔌',
+    mechatronics: '⚙️', programming: '💻', simulation: '🧪',
+    robotics: '🤖', ai: '🧠'
+  };
+
+  function levelClass(level) {
+    return level === 'beginner' ? 'lvl-beginner'
+         : level === 'intermediate' ? 'lvl-intermediate'
+         : 'lvl-advanced';
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  async function loadQuizzes() {
+    try {
+      const res = await fetch('/api/content/all');
+      if (!res.ok) throw new Error('Server error ' + res.status);
+      const data = await res.json();
+      state.quizzes = data.quizzes || {};
+      renderPicker();
+    } catch (err) {
+      console.error(err);
+      document.getElementById('quizGrid').innerHTML =
+        '<div class="status-msg error">Could not load quizzes. Is the server running?</div>';
+    }
+  }
+
+  function renderPicker() {
+    const entries = Object.entries(state.quizzes);
+    if (entries.length === 0) {
+      document.getElementById('quizGrid').innerHTML =
+        '<div class="status-msg">No quizzes available yet. Check back soon.</div>';
+      return;
+    }
+    document.getElementById('quizGrid').innerHTML = entries.map(([key, q]) => `
+      <div class="quiz-card" data-quiz="${esc(key)}">
+        <div class="quiz-card-icon">${QUIZ_ICONS[key] || '❓'}</div>
+        <span class="quiz-card-level ${levelClass(q.level)}">${esc(q.level || 'quiz')}</span>
+        <h3>${esc(q.title)}</h3>
+        <p>${q.questions.length} question${q.questions.length === 1 ? '' : 's'}</p>
+        <div class="quiz-card-meta">
+          <span>${q.questions.length} questions</span>
+          <span class="start">Start →</span>
+        </div>
+      </div>
+    `).join('');
+
+    document.querySelectorAll('.quiz-card').forEach(card => {
+      card.addEventListener('click', () => startQuiz(card.dataset.quiz));
+    });
+  }
+
+  function startQuiz(key) {
+    const q = state.quizzes[key];
+    if (!q) return;
+    state.currentKey = key;
+    state.current = q;
+    state.index = 0;
+    state.score = 0;
+    state.answered = false;
+
+    document.getElementById('pickerView').style.display = 'none';
+    document.getElementById('resultView').style.display = 'none';
+    document.getElementById('playerView').classList.add('active');
+
+    document.getElementById('playerTitle').textContent = q.title;
+    document.getElementById('playerLevel').textContent =
+      (q.level || '').charAt(0).toUpperCase() + (q.level || '').slice(1) + ' · ' + q.questions.length + ' questions';
+
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderQuestion() {
+    const q = state.current.questions[state.index];
+    state.answered = false;
+
+    const total = state.current.questions.length;
+    document.getElementById('progressText').textContent = `Question ${state.index + 1} of ${total}`;
+    document.getElementById('progressScore').textContent = `${state.score} correct`;
+    document.getElementById('progressFill').style.width = ((state.index) / total * 100) + '%';
+
+    document.getElementById('qText').textContent = q.q;
+    const optionsBox = document.getElementById('optionsBox');
+    const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+    optionsBox.innerHTML = q.options.map((opt, i) => `
+      <button class="option-btn" data-i="${i}">
+        <span class="option-letter">${letters[i]}</span>
+        <span>${esc(opt)}</span>
+      </button>
+    `).join('');
+
+    optionsBox.querySelectorAll('.option-btn').forEach(btn => {
+      btn.addEventListener('click', () => choose(parseInt(btn.dataset.i, 10)));
+    });
+
+    const feedback = document.getElementById('feedback');
+    feedback.className = 'feedback';
+    feedback.innerHTML = '';
+
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.style.display = 'none';
+    nextBtn.textContent = state.index === total - 1 ? 'See Results →' : 'Next →';
+    nextBtn.onclick = nextQuestion;
+  }
+
+  function choose(i) {
+    if (state.answered) return;
+    state.answered = true;
+    const q = state.current.questions[state.index];
+    const correct = i === q.answer;
+    if (correct) state.score++;
+
+    document.querySelectorAll('.option-btn').forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.answer) btn.classList.add('correct');
+      else if (idx === i && !correct) btn.classList.add('wrong');
+    });
+
+    const feedback = document.getElementById('feedback');
+    feedback.className = 'feedback show ' + (correct ? 'correct' : 'wrong');
+    const correctLetter = ['A', 'B', 'C', 'D', 'E', 'F'][q.answer];
+    feedback.innerHTML = correct
+      ? `<strong>✓ Correct!</strong>${q.explanation ? `<div class="explanation">${esc(q.explanation)}</div>` : ''}`
+      : `<strong>✗ Incorrect</strong>Correct answer: <strong>${correctLetter}. ${esc(q.options[q.answer])}</strong>${q.explanation ? `<div class="explanation">${esc(q.explanation)}</div>` : ''}`;
+
+    document.getElementById('progressScore').textContent = `${state.score} correct`;
+    document.getElementById('nextBtn').style.display = 'inline-flex';
+  }
+
+  function nextQuestion() {
+    state.index++;
+    if (state.index >= state.current.questions.length) {
+      showResult();
+    } else {
+      renderQuestion();
+    }
+  }
+
+  async function showResult() {
+    document.getElementById('playerView').classList.remove('active');
+    document.getElementById('resultView').style.display = 'block';
+
+    const total = state.current.questions.length;
+    const pct = Math.round(state.score / total * 100);
+    const scoreEl = document.getElementById('resultScore');
+    scoreEl.textContent = `${state.score}/${total}`;
+    scoreEl.className = 'result-score ' + (pct >= 80 ? 'excellent' : pct >= 60 ? 'good' : 'fail');
+    document.getElementById('resultPct').textContent = pct + '%';
+    document.getElementById('resultMsg').textContent =
+      pct >= 80 ? 'Excellent work!' : pct >= 60 ? 'Good job — keep practicing.' : 'Review the notes and try again.';
+
+    // Try to save attempt to server (only if logged in)
+    let loginNote = document.getElementById('loginNote');
+    loginNote.innerHTML = '';
+    try {
+      const me = await fetch('/api/auth/me', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : { student: null }).catch(() => ({ student: null }));
+      if (me && me.student) {
+        const saveRes = await fetch('/api/me/quiz-attempts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({
+            quizKey: state.currentKey,
+            title: state.current.title,
+            score: state.score,
+            total: total
+          })
+        });
+        if (saveRes.ok) {
+          loginNote.innerHTML = '✓ Saved to your account. <a href="index.html#account">View your progress</a>';
+        }
+      } else {
+        loginNote.innerHTML = 'Want to save your score? <a href="index.html#account">Sign in</a>';
+      }
+    } catch (e) {
+      // silent — not critical
+    }
+
+    document.getElementById('retryBtn').onclick = () => startQuiz(state.currentKey);
+    document.getElementById('otherBtn').onclick = backToPicker;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function backToPicker() {
+    document.getElementById('resultView').style.display = 'none';
+    document.getElementById('playerView').classList.remove('active');
+    document.getElementById('pickerView').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Init
+  loadQuizzes();
+</script>
+</body>
+</html>
